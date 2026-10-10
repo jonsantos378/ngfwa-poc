@@ -1,0 +1,9 @@
+k8s/secret.yaml
+.env
+.DS_Store
+*.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+VPS-handoff.md

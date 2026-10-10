@@ -1,0 +1,18 @@
+{
+  "type": "record",
+  "name": "NgfwaTelemetry",
+  "namespace": "com.jonsantos.poc.ngfwa",
+  "doc": "Synthetic fixed-wireless-access radio link telemetry, one record per device per sample interval.",
+  "fields": [
+    { "name": "device_id", "type": "string", "doc": "Synthetic subscriber terminal identifier, e.g. CPE-00042" },
+    { "name": "sector_id", "type": "string", "doc": "Serving sector identifier, e.g. SITE-07-A" },
+    { "name": "event_time", "type": { "type": "long", "logicalType": "timestamp-millis" } },
+    { "name": "signal_strength_dbm", "type": "float", "doc": "Received signal strength, dBm" },
+    { "name": "snr_db", "type": "float", "doc": "Signal-to-noise ratio, dB" },
+    { "name": "sector_load_pct", "type": "float", "doc": "Serving sector load, percent of capacity" },
+    {
+      "name": "link_state",
+      "type": { "type": "enum", "name": "LinkState", "symbols": ["UP", "DEGRADED", "DOWN"] }
+    }
+  ]
+}

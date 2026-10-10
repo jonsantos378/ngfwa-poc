@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ngfwa-poc-config
+  namespace: ngfwa-poc
+data:
+  KAFKA_TOPIC: "ngfwa-telemetry"
+  KAFKA_CONSUMER_GROUP: "ngfwa-anomaly-consumer"
+  DEVICE_COUNT: "20"
+  EMIT_INTERVAL_SECONDS: "2"
+  ANOMALY_RATE: "0.03"
+  SIGNAL_FLOOR_DBM: "-105"
+  SNR_FLOOR_DB: "5"
+  LOAD_CEILING_PCT: "95"

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ngfwa-producer
+  namespace: ngfwa-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ngfwa-producer
+  template:
+    metadata:
+      labels:
+        app: ngfwa-producer
+    spec:
+      containers:
+        - name: producer
+          image: ghcr.io/jonsantos378/ngfwa-producer:latest
+          envFrom:
+            - configMapRef:
+                name: ngfwa-poc-config
+            - secretRef:
+                name: ngfwa-poc-secrets
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
