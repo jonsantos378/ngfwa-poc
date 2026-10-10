@@ -7,6 +7,8 @@ column is a placeholder vector built from the three numeric readings
 Stage 2 replaces it with a real semantic embedding without changing the
 table shape.
 """
+from __future__ import annotations
+
 import os
 
 import psycopg
@@ -56,7 +58,7 @@ INSERT_SQL = """
     INSERT INTO telemetry_events
         (device_id, sector_id, event_time, signal_strength_dbm, snr_db,
          sector_load_pct, link_state, is_anomaly, anomaly_reason, embedding)
-    VALUES (%s, %s, to_timestamp(%s / 1000.0), %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
 
 
@@ -102,7 +104,7 @@ def main() -> None:
                     (
                         reading["device_id"],
                         reading["sector_id"],
-                        reading["event_time"],
+                        reading["event_time"],  # timestamp-millis arrives as a tz-aware datetime
                         reading["signal_strength_dbm"],
                         reading["snr_db"],
                         reading["sector_load_pct"],

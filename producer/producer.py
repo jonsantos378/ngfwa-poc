@@ -91,18 +91,24 @@ def main() -> None:
     fleet = build_device_fleet(DEVICE_COUNT)
     print(f"producing synthetic telemetry for {len(fleet)} devices to topic '{TOPIC}'")
 
-    while True:
-        for device in fleet:
-            force_anomaly = random.random() < ANOMALY_RATE
-            reading = sample_reading(device, force_anomaly)
-            producer.produce(
-                topic=TOPIC,
-                key=reading["device_id"],
-                value=reading,
-                on_delivery=delivery_report,
-            )
-        producer.poll(0)
-        time.sleep(EMIT_INTERVAL_SECONDS)
+    try:
+        while True:
+            for device in fleet:
+                force_anomaly = random.random() < ANOMALY_RATE
+                reading = sample_reading(device, force_anomaly)
+                producer.produce(
+                    topic=TOPIC,
+                    key=reading["device_id"],
+                    value=reading,
+                    on_delivery=delivery_report,
+                )
+            producer.poll(0)
+            time.sleep(EMIT_INTERVAL_SECONDS)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        remaining = producer.flush(10)
+        print(f"stopped; {remaining} messages left undelivered")
 
 
 if __name__ == "__main__":
