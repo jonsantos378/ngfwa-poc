@@ -31,8 +31,9 @@ k3s (VPS) <- Argo CD <- this Git repo (k8s/)
 producer/        synthetic telemetry producer (Python, confluent-kafka)
 consumer/        anomaly-flagging consumer -> Postgres/pgvector
 schema/          Avro schema registered in Schema Registry
-db/              Postgres/pgvector schema (init.sql)
 k8s/             plain Kubernetes manifests Argo CD syncs from
+                 (includes Postgres + pgvector and its schema)
+aws/             IAM policy for the S3 sink connector's role
 templates/       secret template (kept out of k8s/ so Argo CD never applies it)
 argocd/          the Argo CD Application pointing at this repo
 ```
@@ -60,14 +61,22 @@ export KAFKA_API_SECRET=...
 export SCHEMA_REGISTRY_URL=...
 export SCHEMA_REGISTRY_API_KEY=...
 export SCHEMA_REGISTRY_API_SECRET=...
-export DATABASE_URL=postgresql://ngfwa:changeme@localhost:5432/ngfwa_poc
+export DATABASE_URL=postgresql://ngfwa:<password>@localhost:15432/ngfwa_poc
 
 python -m venv .venv && source .venv/bin/activate
 pip install -r producer/requirements.txt -r consumer/requirements.txt
-psql "$DATABASE_URL" -f db/init.sql
 
 python producer/producer.py   # terminal 1
 python consumer/consumer.py   # terminal 2
+```
+
+Postgres runs in k3s and creates its schema on first start
+(`k8s/postgres-init.yaml`). To reach it from a laptop, tunnel through the
+VPS (terminal 3):
+
+```bash
+ssh -L 15432:127.0.0.1:15432 root@<vps-ip> \
+  'kubectl -n ngfwa-poc port-forward svc/postgres 15432:5432'
 ```
 
 ## Building container images

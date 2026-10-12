@@ -3,9 +3,8 @@
 Reads Avro-encoded telemetry from Confluent Cloud, applies simple
 threshold rules, and writes every record to Postgres. The embedding
 column is a placeholder vector built from the three numeric readings
-(signal, SNR, load) so the pgvector column and index exist end to end;
-Stage 2 replaces it with a real semantic embedding without changing the
-table shape.
+(signal, SNR, load) so the pgvector path works end to end; Stage 2 adds
+a real semantic embedding column sized to its embedding model.
 """
 from __future__ import annotations
 
@@ -38,11 +37,11 @@ def classify(reading: dict) -> tuple[bool, str | None]:
     if reading["link_state"] != "UP":
         reasons.append(f"link_state={reading['link_state']}")
     if reading["signal_strength_dbm"] < SIGNAL_FLOOR_DBM:
-        reasons.append(f"signal {reading['signal_strength_dbm']} dBm below floor")
+        reasons.append(f"signal {reading['signal_strength_dbm']:.1f} dBm below floor")
     if reading["snr_db"] < SNR_FLOOR_DB:
-        reasons.append(f"SNR {reading['snr_db']} dB below floor")
+        reasons.append(f"SNR {reading['snr_db']:.1f} dB below floor")
     if reading["sector_load_pct"] > LOAD_CEILING_PCT:
-        reasons.append(f"sector load {reading['sector_load_pct']}% over ceiling")
+        reasons.append(f"sector load {reading['sector_load_pct']:.1f}% over ceiling")
     return (len(reasons) > 0, "; ".join(reasons) if reasons else None)
 
 

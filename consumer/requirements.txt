@@ -1,2 +1,2 @@
 confluent-kafka[avro]==2.5.3
-psycopg[binary]==3.2.3
+psycopg[binary]==3.2.13
