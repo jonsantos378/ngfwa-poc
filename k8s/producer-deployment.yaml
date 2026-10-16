@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: producer
-          image: ghcr.io/jonsantos378/ngfwa-producer:latest
+          image: ghcr.io/jonsantos378/ngfwa-producer:sha-cde92f4
           envFrom:
             - configMapRef:
                 name: ngfwa-poc-config

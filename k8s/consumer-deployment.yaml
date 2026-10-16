@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: consumer
-          image: ghcr.io/jonsantos378/ngfwa-consumer:latest
+          image: ghcr.io/jonsantos378/ngfwa-consumer:sha-cde92f4
           envFrom:
             - configMapRef:
                 name: ngfwa-poc-config
