@@ -21,11 +21,6 @@ spec:
                 name: ngfwa-poc-config
             - secretRef:
                 name: ngfwa-poc-secrets
-          # Pod-template override (wins over the ConfigMap), so changing it
-          # by commit makes Argo CD roll out a new pod.
-          env:
-            - name: ANOMALY_RATE
-              value: "0.10"
           resources:
             requests:
               cpu: 50m
