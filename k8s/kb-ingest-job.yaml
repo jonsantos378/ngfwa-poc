@@ -1,0 +1,32 @@
+# Runs after every Argo CD sync, so a knowledge-base change ships by commit:
+# new image -> tag bump here -> sync -> re-ingest. Unchanged documents are skipped.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kb-ingest
+  namespace: ngfwa-poc
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: ingest
+          image: ghcr.io/jonsantos378/ngfwa-agent:sha-8339a02
+          command: ["python", "ingest.py"]
+          env:
+            # Only the database credential; the agent never receives the Kafka keys.
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ngfwa-poc-secrets
+                  key: DATABASE_URL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 768Mi
