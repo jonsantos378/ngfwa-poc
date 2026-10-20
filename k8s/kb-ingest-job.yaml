@@ -1,13 +1,15 @@
-# Runs after every Argo CD sync, so a knowledge-base change ships by commit:
-# new image -> tag bump here -> sync -> re-ingest. Unchanged documents are skipped.
+# A tracked resource, not a sync hook: Argo CD excludes hooks from its diff,
+# so a hook-only change never triggers auto-sync. Jobs can't be edited in
+# place, so Force+Replace makes Argo CD delete and recreate it on each sync.
+# A knowledge-base change ships by commit: new image -> tag bump here ->
+# OutOfSync -> re-ingest. Unchanged documents are skipped.
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: kb-ingest
   namespace: ngfwa-poc
   annotations:
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
 spec:
   backoffLimit: 2
   template:
